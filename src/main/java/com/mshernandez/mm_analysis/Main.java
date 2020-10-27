@@ -54,14 +54,14 @@ public class Main
      * on the current line.
      * 
      * @param label A label to show before the progress bar.
-     * @param progressBarSize The number of characters to use.
-     * @param cycle The number of cycles completed.
-     * @param numCycles The total number of cycles required.
+     * @param progressBarSize The length of the loading section.
+     * @param currentCycle The number of cycles completed.
+     * @param numberCycles The total number of cycles required.
      */
     public static void showProgressBar(String label, int progressBarSize,
-                                       int cycle, int numCycles)
+                                       int currentCycle, int numberCycles)
     {
-        int progress = (int) ((double) cycle / numCycles * progressBarSize);
+        int progress = (int) ((double) currentCycle / numberCycles * progressBarSize);
         System.out.printf("\r%-10s[", label);
         for (int i = 0; i < progressBarSize; i++)
         {
