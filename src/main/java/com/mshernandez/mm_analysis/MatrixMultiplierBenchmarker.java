@@ -13,6 +13,8 @@ import java.util.TreeMap;
  */
 public class MatrixMultiplierBenchmarker
 {
+    private static final int RANDOM_NUMBER_RANGE = 1000;
+
     private MatrixMultiplier algorithm;
     private Map<Integer, RunningAverage> sizeRuntimeAverages;
 
@@ -37,7 +39,7 @@ public class MatrixMultiplierBenchmarker
      * @param numSamples The number of measurements to take.
      * @return The average time to multiply the given inputs, in nanoseconds.
      */
-    public void benchmarkInput(double[][] a, double[][] b, int numSamples)
+    public void benchmarkInput(int[][] a, int[][] b, int numSamples)
     {
         long[] sampleTimes = new long[numSamples];
         for (int sample = 0; sample < numSamples; sample++)
@@ -64,7 +66,7 @@ public class MatrixMultiplierBenchmarker
      * @param b The second matrix in the operation.
      * @return The time the multiplication took in nanoseconds.
      */
-    public long measureRuntime(double[][] a, double[][] b)
+    public long measureRuntime(int[][] a, int[][] b)
     {
         long startingTime = System.nanoTime();
         algorithm.multiplySquareMatrices(a, b);
@@ -108,13 +110,13 @@ public class MatrixMultiplierBenchmarker
      * 
      * @param matrix The matrix to randomize.
      */
-    public static void randomizeMatrix(double[][] matrix)
+    public static void randomizeMatrix(int[][] matrix)
     {
         for (int row = 0; row < matrix.length; row++)
         {
             for (int col = 0; col < matrix[row].length; col++)
             {
-                matrix[row][col] = Math.random();
+                matrix[row][col] = (int) Math.random() * RANDOM_NUMBER_RANGE + 1;
             }
         }
     }

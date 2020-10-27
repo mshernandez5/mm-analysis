@@ -26,7 +26,7 @@ public abstract class MatrixMultiplier
      * @param b The second matrix in the operation.
      * @return The resulting matrix.
      */
-    public abstract double[][] multiplySquareMatrices(double[][] a, double[][] b);
+    public abstract int[][] multiplySquareMatrices(int[][] a, int[][] b);
 
     /**
      * Returns the name of the algorithm.

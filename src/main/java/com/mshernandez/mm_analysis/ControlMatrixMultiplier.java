@@ -29,10 +29,10 @@ public class ControlMatrixMultiplier extends MatrixMultiplier
      * @return The resulting matrix.
      */
     @Override
-    public double[][] multiplySquareMatrices(double[][] a, double[][] b)
+    public int[][] multiplySquareMatrices(int[][] a, int[][] b)
     {
         int size = a.length;
-        double[][] result = new double[size][size];
+        int[][] result = new int[size][size];
         return result;
     }
 }

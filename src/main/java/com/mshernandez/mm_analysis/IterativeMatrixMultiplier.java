@@ -24,15 +24,15 @@ public class IterativeMatrixMultiplier extends MatrixMultiplier
      * @return The resulting matrix.
      */
     @Override
-    public double[][] multiplySquareMatrices(double[][] a, double[][] b)
+    public int[][] multiplySquareMatrices(int[][] a, int[][] b)
     {
         int size = a.length;
-        double[][] result = new double[size][size];
+        int[][] result = new int[size][size];
         for (int resultRow = 0; resultRow < size; resultRow++)
         {
             for (int resultCol = 0; resultCol < size; resultCol++)
             {
-                double sum = 0.0;
+                int sum = 0;
                 for (int i = 0; i < size; i++)
                 {
                     sum += a[resultRow][i] * b[i][resultCol];

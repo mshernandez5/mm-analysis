@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class Main
 {
-    public static final int MATRIX_SIZE_LIMIT = 512;
+    public static final int MATRIX_SIZE_LIMIT = 128;
     public static final int NUMBER_INPUTS_PER_SIZE = 1000;
     public static final int NUMBER_SAMPLES_PER_INPUT = 20;
 
@@ -21,11 +21,13 @@ public class Main
     {
         List<MatrixMultiplierBenchmarker> benchmarks = new ArrayList<>();
         benchmarks.add(new MatrixMultiplierBenchmarker(new IterativeMatrixMultiplier()));
+        benchmarks.add(new MatrixMultiplierBenchmarker(new DivideConquerMatrixMultiplier()));
+        benchmarks.add(new MatrixMultiplierBenchmarker(new StrassensMatrixMultiplier()));
         benchmarks.add(new MatrixMultiplierBenchmarker(new ControlMatrixMultiplier()));
         for (int size = 2; size <= MATRIX_SIZE_LIMIT; size = size << 1)
         {
-            double[][] matrixA = new double[size][size];
-            double[][] matrixB = new double[size][size];
+            int[][] matrixA = new int[size][size];
+            int[][] matrixB = new int[size][size];
             System.out.println();
             for (int input = 0; input < NUMBER_INPUTS_PER_SIZE; input++)
             {
