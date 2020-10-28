@@ -1,14 +1,18 @@
 package com.mshernandez.mm_analysis;
 
 import java.util.List;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Map;
 
 public class Main
 {
-    public static final int MATRIX_SIZE_LIMIT = 1024;
+    public static final int MATRIX_SIZE_LIMIT = 256;
     public static final int NUMBER_INPUTS_PER_SIZE = 1000;
     public static final int NUMBER_SAMPLES_PER_INPUT = 20;
+
+    public static final String OUTPUT_FILE = "data.csv";
 
     /**
      * Measures the runtime to multiply randomly generated
@@ -37,6 +41,9 @@ public class Main
          * Generate and feed inputs into registered matrix benchmarkers,
          * which will measure and average the runtimes for each input.
          * 
+         * Inputs are generated with size n*n, where n begins at 2 and
+         * increases by a factor of 2 until reaching the specified limit.
+         * 
          * A progress bar is displayed in the console to allow the user
          * to guage the completion of the program.
          */
@@ -57,16 +64,39 @@ public class Main
                 }
             }
         }
+        System.out.println("\n");
 
         /**
          * Extract the runtime averages from the benchmarker objects.
+         * Save the results in a CSV file.
          */
-        for (MatrixMultiplierBenchmarker benchmarker : benchmarks)
+        try (PrintWriter filePrintWriter = new PrintWriter(OUTPUT_FILE))
         {
-            Map<Integer, Double> runtimes = benchmarker.getAverageRuntimes();
-            for (int size : runtimes.keySet())
+            for (MatrixMultiplierBenchmarker benchmarker : benchmarks)
             {
-                System.out.printf("\nSize %5d: %f\n", size, runtimes.get(size));
+                filePrintWriter.print(benchmarker.getAlgorithmName() + ",");
+                Map<Integer, Double> runtimes = benchmarker.getAverageRuntimes();
+                for (int size : runtimes.keySet())
+                {
+                    filePrintWriter.print(runtimes.get(size) + ",");
+                }
+                filePrintWriter.println();
+            }
+            System.out.println("Results Saved: " + OUTPUT_FILE);
+        }
+        catch (IOException e)
+        {
+            System.out.println("Error Writing File: " + OUTPUT_FILE);
+            System.out.println("Printing Results In Console...\n");
+            for (MatrixMultiplierBenchmarker benchmarker : benchmarks)
+            {
+                System.out.print(benchmarker.getAlgorithmName() + ",");
+                Map<Integer, Double> runtimes = benchmarker.getAverageRuntimes();
+                for (int size : runtimes.keySet())
+                {
+                    System.out.print(runtimes.get(size) + ",");
+                }
+                System.out.println();
             }
         }
     }

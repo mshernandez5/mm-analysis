@@ -49,8 +49,9 @@ public class MatrixMultiplierBenchmarker
         double averageTimeForInput = 0.0;
         for (long time : sampleTimes)
         {
-            averageTimeForInput = (double) time / sampleTimes.length;
+            averageTimeForInput += time;
         }
+        averageTimeForInput /= (double) numSamples;
         int inputSize = a.length;
         if (!sizeRuntimeAverages.containsKey(inputSize))
         {
