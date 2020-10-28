@@ -28,15 +28,24 @@ public class DivideConquerMatrixMultiplier extends MatrixMultiplier
     {
         int size = a.length;
         int[][] result = new int[size][size];
-        multiply(a, 0, 0, b, 0, 0, result, 0, 0, result.length);
+        mul(a,      0, 0,
+            b,      0, 0,
+            result, 0, 0,
+            result.length);
         return result;
     }
 
-    private void multiply(int[][] a, int aRowPtr, int aColPtr,
-                          int[][] b, int bRowPtr, int bColPtr,
-                          int[][] c, int cRowPtr, int cColPtr, int size)
+    private void mul(int[][] a, int aRowPtr, int aColPtr,
+                     int[][] b, int bRowPtr, int bColPtr,
+                     int[][] c, int cRowPtr, int cColPtr, int size)
     {
-        // Base Case
+        /**
+         * Base Case
+         * Note: To avoid the creation of unnecessary arrays
+         *       the base case will not only multiply the 2x2
+         *       arrays together but will also directly add the
+         *       results into the result matrix.
+         */
         if (size <= 2)
         {
             for (int rPos = 0; rPos < 2; rPos++)
@@ -55,43 +64,43 @@ public class DivideConquerMatrixMultiplier extends MatrixMultiplier
             return;
         }
         // Divide & Conquer
-        int dividedSize = size / 2;
-        // C00 = A00*B00 + A01*B10
-        multiply(a, aRowPtr,               aColPtr,               // A00
-                 b, bRowPtr,               bColPtr,               // B00
-                 c, cRowPtr,               cColPtr,               // C00
-                 dividedSize);
-        multiply(a, aRowPtr,               aColPtr + dividedSize, // A01
-                 b, bRowPtr + dividedSize, bColPtr,               // B10
-                 c, cRowPtr,               cColPtr,               // C00
-                 dividedSize);
-        // C01 = A00*B01 + A01*B11
-        multiply(a, aRowPtr,               aColPtr,               // A00
-                 b, bRowPtr,               bColPtr + dividedSize, // B01
-                 c, cRowPtr,               cColPtr + dividedSize, // C01
-                 dividedSize);
-        multiply(a, aRowPtr,               aColPtr + dividedSize, // A01
-                 b, bRowPtr + dividedSize, bColPtr + dividedSize, // B11
-                 c, cRowPtr,               cColPtr + dividedSize, // C01
-                 dividedSize);
-        // C10 = A10*B00 + A11*B10
-        multiply(a, aRowPtr + dividedSize, aColPtr,               // A10
-                 b, bRowPtr,               bColPtr,               // B00
-                 c, cRowPtr + dividedSize, cColPtr,               // C10
-                 dividedSize);
-        multiply(a, aRowPtr + dividedSize, aColPtr + dividedSize, // A11
-                 b, bRowPtr + dividedSize, bColPtr,               // B10
-                 c, cRowPtr + dividedSize, cColPtr,               // C10
-                 dividedSize);
-        // C11 = A10*B10 + A11*B11
-        multiply(a, aRowPtr + dividedSize, aColPtr,               // A10
-                 b, bRowPtr,               bColPtr + dividedSize, // B01
-                 c, cRowPtr + dividedSize, cColPtr + dividedSize, // C11
-                 dividedSize);
-        multiply(a, aRowPtr + dividedSize, aColPtr + dividedSize, // A11
-                 b, bRowPtr + dividedSize, bColPtr + dividedSize, // B11
-                 c, cRowPtr + dividedSize, cColPtr + dividedSize, // C11
-                 dividedSize);
+        int quadrantSize = size / 2;
+        // C11 = A11*B11 + A12*B21
+        mul(a, aRowPtr,                aColPtr,                // A11
+            b, bRowPtr,                bColPtr,                // B11
+            c, cRowPtr,                cColPtr,                // C11
+            quadrantSize);
+        mul(a, aRowPtr,                aColPtr + quadrantSize, // A12
+            b, bRowPtr + quadrantSize, bColPtr,                // B21
+            c, cRowPtr,                cColPtr,                // C11
+            quadrantSize);
+        // C12 = A11*B12 + A12*B22
+        mul(a, aRowPtr,                aColPtr,                // A11
+            b, bRowPtr,                bColPtr + quadrantSize, // B12
+            c, cRowPtr,                cColPtr + quadrantSize, // C12
+            quadrantSize);
+        mul(a, aRowPtr,                aColPtr + quadrantSize, // A12
+            b, bRowPtr + quadrantSize, bColPtr + quadrantSize, // B22
+            c, cRowPtr,                cColPtr + quadrantSize, // C12
+            quadrantSize);
+        // C21 = A21*B11 + A22*B21
+        mul(a, aRowPtr + quadrantSize, aColPtr,                // A21
+            b, bRowPtr,                bColPtr,                // B11
+            c, cRowPtr + quadrantSize, cColPtr,                // C21
+            quadrantSize);
+        mul(a, aRowPtr + quadrantSize, aColPtr + quadrantSize, // A22
+            b, bRowPtr + quadrantSize, bColPtr,                // B21
+            c, cRowPtr + quadrantSize, cColPtr,                // C21
+            quadrantSize);
+        // C22 = A21*B12 + A22*B22
+        mul(a, aRowPtr + quadrantSize, aColPtr,                // A21
+            b, bRowPtr,                bColPtr + quadrantSize, // B12
+            c, cRowPtr + quadrantSize, cColPtr + quadrantSize, // C22
+            quadrantSize);
+        mul(a, aRowPtr + quadrantSize, aColPtr + quadrantSize, // A22
+            b, bRowPtr + quadrantSize, bColPtr + quadrantSize, // B22
+            c, cRowPtr + quadrantSize, cColPtr + quadrantSize, // C22
+            quadrantSize);
         return;
     }
 }
