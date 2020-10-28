@@ -30,13 +30,13 @@ public class StrassensMatrixMultiplier extends MatrixMultiplier
         int[][] result = new int[size][size];
         multiply(a, 0, 0,
                  b, 0, 0,
-                 result, 0, 0);
+                 result);
         return result;
     }
 
     private void multiply(int[][] a, int aRowPtr, int aColPtr,
                           int[][] b, int bRowPtr, int bColPtr,
-                          int[][] c, int cRowPtr, int cColPtr)
+                          int[][] c)
     {
         // Base Case
         if (c.length <= 2)
@@ -51,12 +51,21 @@ public class StrassensMatrixMultiplier extends MatrixMultiplier
                         sum += a[aRowPtr + rPos][aColPtr + i]
                                * b[bRowPtr + i][bColPtr + cPos]; 
                     }
-                    c[cRowPtr + rPos][cColPtr + cPos] = sum;
+                    c[rPos][cPos] = sum;
                 }
             }
             return;
         }
         // Recursive Calls
+        // Array Provided To Store Result May Have
+        // Existing Contents, Must Be Cleared
+        for (int rPos = 0; rPos < c.length; rPos++)
+        {
+            for (int cPos = 0; cPos < c[rPos].length; cPos++)
+            {
+                c[rPos][cPos] = 0;
+            }
+        }
         int quadrantSize = c.length / 2;
         // Need At Least 3 Temporary Matrices For Operations
         int[][] t1 = new int[quadrantSize][quadrantSize];
@@ -77,15 +86,15 @@ public class StrassensMatrixMultiplier extends MatrixMultiplier
         // P = t3 = (A11 + A22)(B11 + B22)
         multiply(t1, 0, 0,  // (A11 + A22)
                  t2, 0, 0,  // (B11 + B22)
-                 t3, 0, 0); // (A11 + A22)(B11 + B22)
+                 t3); // (A11 + A22)(B11 + B22)
         // Add P To C11 & C22 Immediately So Value Can Be Discarded
         add(t3, 0,                      0,                      // P
-            c,  cRowPtr,                cColPtr,                // C11
-            c,  cRowPtr,                cColPtr,                // C11
+            c,  0,                      0,                // C11
+            c,  0,                      0,                // C11
             quadrantSize, false);
         add(t3, 0,                      0,                      // P
-            c,  cRowPtr + quadrantSize, cColPtr + quadrantSize, // C22
-            c,  cRowPtr + quadrantSize, cColPtr + quadrantSize, // C22
+            c,  quadrantSize, quadrantSize, // C22
+            c,  quadrantSize, quadrantSize, // C22
             quadrantSize, false);
         
         // Calculate Q
@@ -97,15 +106,15 @@ public class StrassensMatrixMultiplier extends MatrixMultiplier
         // Q = t3 = (A21 + A22)B11
         multiply(t1, 0,       0,       // (A21 + A22)
                  b,  bRowPtr, bColPtr, // B11
-                 t3, 0,       0);      // Q
+                 t3);      // Q
         // Add Q To C21 & Subtract From C22 Immediately
         add(t3, 0,                      0,                      // Q
-            c,  cRowPtr + quadrantSize, cColPtr,                // C21
-            c,  cRowPtr + quadrantSize, cColPtr,                // C21
+            c,  quadrantSize, 0,                // C21
+            c,  quadrantSize, 0,                // C21
             quadrantSize, false);
-        add(t3, 0,                      0,                      // Q
-            c,  cRowPtr + quadrantSize, cColPtr + quadrantSize, // C22
-            c,  cRowPtr + quadrantSize, cColPtr + quadrantSize, // C22
+        add(c,  quadrantSize, quadrantSize, // C22
+            t3, 0,                      0,                      // Q
+            c,  quadrantSize, quadrantSize, // C22
             quadrantSize, true);
         
         // Calculate R
@@ -117,15 +126,15 @@ public class StrassensMatrixMultiplier extends MatrixMultiplier
         // R = t3 = A11(B12 - B22)
         multiply(a,  aRowPtr, aColPtr, // A11
                  t2, 0,       0,       // (B12 - B22)
-                 t3, 0,       0);      // R
+                 t3);      // R
         // Add R To C12 & C22 Immediately
-        add(t3, 0,                      0,                      // R
-            c,  cRowPtr,                cColPtr + quadrantSize, // C12
-            c,  cRowPtr,                cColPtr + quadrantSize, // C12
+        add(c,  0,                quadrantSize, // C12
+            t3, 0,                      0,                      // R
+            c,  0,                quadrantSize, // C12
             quadrantSize, false);
-        add(t3, 0,                      0,                      // R
-            c,  cRowPtr + quadrantSize, cColPtr + quadrantSize, // C22
-            c,  cRowPtr + quadrantSize, cColPtr + quadrantSize, // C22
+        add(c,  quadrantSize, quadrantSize, // C22
+            t3, 0,                      0,                      // R
+            c,  quadrantSize, quadrantSize, // C22
             quadrantSize, false);
         
         // Calculate S
@@ -137,15 +146,15 @@ public class StrassensMatrixMultiplier extends MatrixMultiplier
         // S = t3 = A22(B21 - B11)
         multiply(a,  aRowPtr + quadrantSize, aColPtr + quadrantSize, // A22
                  t2, 0,                      0,                      // (B21 - B11)
-                 t3, 0,                      0);                     // S
+                 t3);                     // S
         // Add S To C11 & C21 Immediately
-        add(t3, 0,       0,                                     // S
-            c,  cRowPtr, cColPtr,                               // C11
-            c,  cRowPtr, cColPtr,                               // C11
+        add(c,  0, 0,                               // C11
+            t3, 0,       0,                                     // S
+            c,  0, 0,                               // C11
             quadrantSize, false);
-        add(t3, 0,                      0,                      // S
-            c,  cRowPtr + quadrantSize, cColPtr,                // C21
-            c,  cRowPtr + quadrantSize, cColPtr,                // C21
+        add(c,  quadrantSize, 0,                // C21
+            t3, 0,                      0,                      // S
+            c,  quadrantSize, 0,                // C21
             quadrantSize, false);
         
         // Calculate T
@@ -157,15 +166,15 @@ public class StrassensMatrixMultiplier extends MatrixMultiplier
         // T = t3 = (A11 + A12)B22
         multiply(t1, 0,                      0,                      // (A11 + A12)
                  b,  bRowPtr + quadrantSize, bColPtr + quadrantSize, // B22
-                 t3, 0,                      0);                     // T
+                 t3);                     // T
         // Subtract T From C11 & Add To C12 Immediately
-        add(t3, 0,                      0,                      // T
-            c,  cRowPtr,                cColPtr,                // C11
-            c,  cRowPtr,                cColPtr,                // C11
+        add(c,  0,                0,                // C11
+            t3, 0,                0,                      // T
+            c,  0,                0,                // C11
             quadrantSize, true);
-        add(t3, 0,                      0,                      // T
-            c,  cRowPtr,                cColPtr + quadrantSize, // C12
-            c,  cRowPtr,                cColPtr + quadrantSize, // C12
+        add(c,  0,                quadrantSize, // C12
+            t3, 0,                      0,                      // T
+            c,  0,                quadrantSize, // C12
             quadrantSize, false);
 
         // Calculate U
@@ -182,11 +191,11 @@ public class StrassensMatrixMultiplier extends MatrixMultiplier
         // U = t3 = (A21 - A11)(B11 + B12)
         multiply(t1, 0, 0,  // (A21 - A11)
                  t2, 0, 0,  // (B11 + B12)
-                 t3, 0, 0); // (A21 - A11)(B11 + B12)
+                 t3); // (A21 - A11)(B11 + B12)
         // Add U To C22 Immediately
-        add(t3, 0,                      0,                      // U
-            c,  cRowPtr + quadrantSize, cColPtr + quadrantSize, // C22
-            c,  cRowPtr + quadrantSize, cColPtr + quadrantSize, // C22
+        add(c,  quadrantSize, quadrantSize, // C22
+            t3, 0,                      0,                      // U
+            c,  quadrantSize, quadrantSize, // C22
             quadrantSize, false);
 
         // Calculate V
@@ -203,11 +212,11 @@ public class StrassensMatrixMultiplier extends MatrixMultiplier
         // V = t3 = (A12 - A22)(B21 + B22)
         multiply(t1, 0, 0,  // (A12 - A22)
                  t2, 0, 0,  // (B21 + B22)
-                 t3, 0, 0); // (A12 - A22)(B21 + B22)
+                 t3); // (A12 - A22)(B21 + B22)
         // Add To C11 Immediately
-        add(t3, 0,                      0,                      // V
-            c,  cRowPtr,                cColPtr,                // C11
-            c,  cRowPtr,                cColPtr,                // C11
+        add(c,  0,                0,                // C11
+            t3, 0,                      0,                      // V
+            c,  0,                0,                // C11
             quadrantSize, false);
     }
 
