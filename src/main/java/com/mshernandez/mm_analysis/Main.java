@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class Main
 {
-    public static final int MATRIX_SIZE_LIMIT = 256;
+    public static final int MATRIX_SIZE_LIMIT = 512;
     public static final int NUMBER_INPUTS_PER_SIZE = 1000;
     public static final int NUMBER_SAMPLES_PER_INPUT = 20;
 
