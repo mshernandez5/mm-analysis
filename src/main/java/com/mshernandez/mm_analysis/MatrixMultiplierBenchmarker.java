@@ -117,7 +117,7 @@ public class MatrixMultiplierBenchmarker
         {
             for (int col = 0; col < matrix[row].length; col++)
             {
-                matrix[row][col] = (int) Math.random() * RANDOM_NUMBER_RANGE + 1;
+                matrix[row][col] = (int) (Math.random() * RANDOM_NUMBER_RANGE) + 1;
             }
         }
     }
